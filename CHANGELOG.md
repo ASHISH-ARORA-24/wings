@@ -13,3 +13,12 @@ All notable changes to this project will be documented here.
 
 ### Changed
 - Homepage updated to use `{{ site_name }}` throughout (title, nav logo, hero, footer)
+- Dev dependencies: added `pytest-django`, `model-bakery`, `faker`
+- `pyproject.toml` updated with `[tool.pytest.ini_options]` config
+
+### Tests
+- Unit test structure: `tests/unit/<app_name>/`
+- `tests/conftest.py` with shared fixtures (`user`, `family_user`, `vendor_user`)
+- `tests/unit/accounts/test_models.py` — 9 tests for `UserExtraInfo`
+- `tests/unit/wings/test_context_processors.py` — 3 tests for `site_name` processor
+- `tests/unit/wings/test_views.py` — 3 tests for home view

@@ -5,6 +5,22 @@
 - **Framework:** Django 6, Python 3.12
 - **Database:** SQLite (dev); intended to swap for Postgres in production
 - **Package manager:** uv
+- **Testing:** pytest-django, model-bakery, faker
+
+---
+
+## Testing structure
+
+```
+tests/
+  conftest.py           ← shared fixtures
+  unit/
+    <app_name>/
+      test_*.py
+  integration/          ← not yet created
+```
+
+Run unit tests: `.venv/bin/pytest tests/unit/ -v`
 
 ---
 
