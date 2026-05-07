@@ -4,6 +4,9 @@ All notable changes to this project will be documented here.
 
 ## [Unreleased]
 
+### Changed
+- CLAUDE.md: added rule to write unit tests before every commit and run them before committing
+
 ### Added
 - `accounts` app with `UserExtraInfo` model — extends the built-in User with `phone` and `role` (family/vendor) fields
 - `UserExtraInfo` shown as an inline on the User admin page

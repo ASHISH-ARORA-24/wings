@@ -8,7 +8,9 @@ If something adjacent seems worth doing, mention it — but do not do it without
 
 ## On every commit
 
-1. Bump the patch version in `pyproject.toml` (e.g. `0.1.1` → `0.1.2`)
-2. Update `CHANGELOG.md` with the changes
-3. Update `doc/architecture.md` if any architectural decision changed
-4. After committing, create a git tag matching the new version: `git tag v<version>`
+1. Write unit tests for any new or changed code in `tests/unit/<app_name>/`
+2. Run tests and confirm all pass before committing
+3. Bump the patch version in `pyproject.toml` (e.g. `0.1.1` → `0.1.2`)
+4. Update `CHANGELOG.md` with the changes
+5. Update `doc/architecture.md` if any architectural decision changed
+6. After committing, create a git tag matching the new version: `git tag v<version>`
