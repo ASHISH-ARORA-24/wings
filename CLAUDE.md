@@ -6,11 +6,37 @@ Do exactly what is asked. If the user says "do task A", do task A only.
 Do not create task B or C alongside it, even if it seems helpful or related.
 If something adjacent seems worth doing, mention it — but do not do it without being asked.
 
-## On every commit
+## Pre-commit checklist
 
-1. Write unit tests for any new or changed code in `tests/unit/<app_name>/`
-2. Run tests and confirm all pass before committing
-3. Bump the patch version in `pyproject.toml` (e.g. `0.1.1` → `0.1.2`)
-4. Update `CHANGELOG.md` with the changes
-5. Update `doc/architecture.md` if any architectural decision changed
-6. After committing, create a git tag matching the new version: `git tag v<version>`
+Follow these steps in order before every commit — no exceptions.
+
+### 1. Unit tests
+- Write unit tests for all new and changed code under `tests/unit/<app_name>/`
+- Cover as many cases as reasonably possible (happy path, edge cases, failure cases)
+- Run the full suite and confirm everything passes:
+  ```
+  .venv/bin/pytest tests/unit/ -v
+  ```
+- Do not commit if any test is failing
+
+### 2. Version bump
+- Increment the patch version in `pyproject.toml`
+- Format: `MAJOR.MINOR.PATCH` — only the patch number increases per commit
+- Example: `0.1.2` → `0.1.3`
+
+### 3. Changelog
+- Add a new version entry to `CHANGELOG.md` using the bumped version number
+- Format:
+  ```
+  ## [0.1.3] - YYYY-MM-DD
+  ### Added / Changed / Fixed
+  - ...
+  ```
+- Do not use `[Unreleased]` — always use the actual version
+
+### 4. Commit and tag
+- Commit all changes including tests, version bump, and changelog
+- Immediately after, create a git tag:
+  ```
+  git tag v<version>
+  ```
