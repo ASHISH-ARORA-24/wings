@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented here.
 
+## [0.1.4] - 2026-05-08
+
+### Added
+- `family` and `vendor` Django apps with protected dashboards
+- Google OAuth login via `django-allauth`
+- Login modal on homepage with email/phone input, Get OTP button, Login with Google and Login with Microsoft buttons
+- Role selector (Family / Vendor) in login modal — mandatory before any login action
+- `wings/adapters.py` — custom allauth adapter redirects to correct dashboard based on session role
+- `wings/views.py` — `google_login_with_role` view stores role in session before Google redirect
+- `.env` support via `python-dotenv` — Google credentials stored securely, never committed
+- `CLAUDE.md` — code conventions: function-based views only, `uv run` for all commands, never commit `.env`
+
+### Changed
+- Logout now skips confirmation page and redirects directly to homepage
+
+### Tests
+- 41 unit tests across all apps — all passing
+- `tests/unit/family/test_views.py` — 7 tests
+- `tests/unit/vendor/test_views.py` — 7 tests
+- `tests/unit/wings/test_adapters.py` — 5 tests for role-based redirect logic
+- `tests/unit/wings/test_views.py` — expanded to 9 tests including `google_login_with_role`
+
 ## [0.1.3] - 2026-05-07
 
 ### Changed

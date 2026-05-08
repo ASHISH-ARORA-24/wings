@@ -15,10 +15,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from wings.views import home
+from django.urls import include, path
+from wings.views import google_login_with_role, home
 
 urlpatterns = [
     path('', home, name='home'),
     path('admin/', admin.site.urls),
+    path('accounts/', include('allauth.urls')),
+    path('login/google/<str:role>/', google_login_with_role, name='google_login_with_role'),
+    path('family/', include('family.urls')),
+    path('vendor/', include('vendor.urls')),
 ]

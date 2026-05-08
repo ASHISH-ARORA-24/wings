@@ -15,7 +15,7 @@ Follow these steps in order before every commit — no exceptions.
 - Cover as many cases as reasonably possible (happy path, edge cases, failure cases)
 - Run the full suite and confirm everything passes:
   ```
-  .venv/bin/pytest tests/unit/ -v
+  uv run pytest tests/unit/ -v
   ```
 - Do not commit if any test is failing
 
@@ -40,3 +40,21 @@ Follow these steps in order before every commit — no exceptions.
   ```
   git tag v<version>
   ```
+
+> **Important:** Only follow this checklist when explicitly asked to commit. Do not run any of these steps automatically during normal development work.
+
+## Code conventions
+
+### Views
+- All views must be **function-based only**. No class-based views under any circumstances.
+
+### Commands
+- Always use `uv run` to execute project commands:
+  ```
+  uv run manage.py runserver
+  uv run manage.py migrate
+  uv run pytest tests/unit/ -v
+  ```
+
+### Security
+- Never commit `.env` — it contains credentials. It is already in `.gitignore` and must stay there.

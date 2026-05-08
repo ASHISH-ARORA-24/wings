@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Dashboard – {{ site_name }}</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0a0f1e;
+            color: #e8eaf0;
+            min-height: 100vh;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 3rem;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            background: rgba(10, 15, 30, 0.95);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .role-badge {
+            background: rgba(99,102,241,0.15);
+            border: 1px solid rgba(99,102,241,0.3);
+            color: #a5b4fc;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.3rem 0.75rem;
+            border-radius: 999px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .nav-user { font-size: 0.875rem; color: #94a3b8; }
+
+        .btn-logout {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #e8eaf0;
+            padding: 0.4rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: background 0.2s;
+        }
+
+        .btn-logout:hover { background: rgba(255,255,255,0.1); }
+
+        .main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .greeting {
+            margin-bottom: 2.5rem;
+        }
+
+        .greeting h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+        }
+
+        .greeting p { color: #64748b; font-size: 0.95rem; }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .card:hover { border-color: rgba(99,102,241,0.35); transform: translateY(-2px); }
+        .card-icon { font-size: 1.5rem; margin-bottom: 0.75rem; }
+        .card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.3rem; }
+        .card p { font-size: 0.82rem; color: #475569; line-height: 1.5; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">{{ site_name }}</div>
+        <div class="nav-right">
+            <span class="role-badge">Family</span>
+            <span class="nav-user">{{ request.user.get_full_name|default:request.user.username }}</span>
+            <a href="/accounts/logout/" class="btn-logout">Sign out</a>
+        </div>
+    </nav>
+
+    <main class="main">
+        <div class="greeting">
+            <h1>Welcome, {{ request.user.get_full_name|default:request.user.username }} 👋</h1>
+            <p>You are signed in as a Family member.</p>
+        </div>
+
+        <div class="cards">
+            <div class="card">
+                <div class="card-icon">🔍</div>
+                <h3>Find Support</h3>
+                <p>Browse and connect with verified vendors and service providers.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">👨‍👩‍👧</div>
+                <h3>Family Profile</h3>
+                <p>Manage your family details, members, and preferences.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">📋</div>
+                <h3>My Requests</h3>
+                <p>Track the status of your support requests and connections.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">💬</div>
+                <h3>Messages</h3>
+                <p>View and respond to messages from vendors.</p>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

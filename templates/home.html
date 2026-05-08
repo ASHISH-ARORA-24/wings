@@ -60,29 +60,31 @@
             align-items: center;
         }
 
-        .nav-cta a {
+        .nav-cta a, .nav-cta button {
             padding: 0.5rem 1.25rem;
             border-radius: 6px;
             text-decoration: none;
             font-size: 0.875rem;
             font-weight: 500;
+            cursor: pointer;
             transition: opacity 0.2s, background 0.2s;
         }
 
-        .nav-cta a:first-child {
+        .btn-login {
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.15);
             color: #e8eaf0;
         }
 
-        .nav-cta a:first-child:hover { background: rgba(255,255,255,0.1); }
+        .btn-login:hover { background: rgba(255,255,255,0.1); }
 
-        .nav-cta a:last-child {
+        .btn-admin {
             background: linear-gradient(135deg, #3b82f6, #8b5cf6);
             color: #fff;
+            border: none;
         }
 
-        .nav-cta a:last-child:hover { opacity: 0.85; }
+        .btn-admin:hover { opacity: 0.85; }
 
         .hero {
             flex: 1;
@@ -224,6 +226,180 @@
             font-size: 0.8rem;
             border-top: 1px solid rgba(255,255,255,0.04);
         }
+
+        /* ── Login Modal ── */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-backdrop.open { display: flex; }
+
+        .modal-box {
+            background: #111827;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 420px;
+            position: relative;
+            animation: slideUp 0.2s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1.25rem;
+            background: none;
+            border: none;
+            color: #64748b;
+            font-size: 1.25rem;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover { color: #e8eaf0; }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+        }
+
+        .modal-subtitle {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 1.75rem;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .input-group input {
+            flex: 1;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 0.65rem 1rem;
+            color: #e8eaf0;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input::placeholder { color: #475569; }
+        .input-group input:focus { border-color: rgba(99,102,241,0.6); }
+
+        .btn-otp {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 0.65rem 1.1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: opacity 0.2s;
+        }
+
+        .btn-otp:hover { opacity: 0.85; }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+            color: #334155;
+            font-size: 0.8rem;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.07);
+        }
+
+        .btn-social {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.65rem;
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.03);
+            color: #e8eaf0;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 0.75rem;
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .btn-social:hover {
+            background: rgba(255,255,255,0.07);
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .btn-social svg { flex-shrink: 0; }
+
+        /* ── Role selector ── */
+        .role-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .role-option {
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 0.85rem 0.75rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            background: rgba(255,255,255,0.03);
+        }
+
+        .role-option:hover {
+            border-color: rgba(99,102,241,0.4);
+            background: rgba(99,102,241,0.05);
+        }
+
+        .role-option.selected {
+            border-color: #6366f1;
+            background: rgba(99,102,241,0.12);
+        }
+
+        .role-option .role-icon { font-size: 1.4rem; margin-bottom: 0.3rem; }
+        .role-option .role-label { font-size: 0.85rem; font-weight: 600; color: #e8eaf0; }
+        .role-option .role-desc  { font-size: 0.72rem; color: #64748b; margin-top: 0.15rem; }
+
+        .role-error {
+            font-size: 0.78rem;
+            color: #f87171;
+            margin-top: -1rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -236,8 +412,8 @@
             <li><a href="#">About</a></li>
         </ul>
         <div class="nav-cta">
-            <a href="/login/">Login</a>
-            <a href="/admin/">Admin</a>
+            <button class="btn-login" onclick="openLoginModal()">Login</button>
+            <a href="/admin/" class="btn-admin">Admin</a>
         </div>
     </nav>
 
@@ -277,6 +453,104 @@
     <footer>
         &copy; 2026 {{ site_name }}. All rights reserved.
     </footer>
+
+    <!-- Login Modal -->
+    <div class="modal-backdrop" id="loginModal" onclick="handleBackdropClick(event)">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeLoginModal()">&times;</button>
+
+            <div class="modal-title">Welcome back</div>
+            <div class="modal-subtitle">How would you like to sign in today?</div>
+
+            <div class="role-selector">
+                <div class="role-option" id="role-family" onclick="selectRole('family')">
+                    <div class="role-icon">🏠</div>
+                    <div class="role-label">Family</div>
+                    <div class="role-desc">Find the right support</div>
+                </div>
+                <div class="role-option" id="role-vendor" onclick="selectRole('vendor')">
+                    <div class="role-icon">🤝</div>
+                    <div class="role-label">Vendor</div>
+                    <div class="role-desc">Offer your services</div>
+                </div>
+            </div>
+            <div class="role-error" id="role-error">Please select how you want to sign in.</div>
+
+            <div class="input-group">
+                <input type="text" id="loginInput" placeholder="Email or phone number" />
+                <button class="btn-otp">Get OTP</button>
+            </div>
+
+            <div class="divider">or continue with</div>
+
+            <a href="/accounts/google/login/" class="btn-social">
+                <!-- Google icon -->
+                <svg width="18" height="18" viewBox="0 0 48 48">
+                    <path fill="#EA4335" d="M24 9.5c3.14 0 5.95 1.08 8.17 2.85l6.08-6.08C34.46 3.09 29.5 1 24 1 14.82 1 7.07 6.48 3.64 14.22l7.08 5.5C12.4 13.59 17.74 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.5 24.5c0-1.64-.15-3.22-.42-4.74H24v9h12.67c-.55 2.96-2.2 5.47-4.67 7.14l7.19 5.58C43.39 37.27 46.5 31.35 46.5 24.5z"/>
+                    <path fill="#FBBC05" d="M10.72 28.28A14.6 14.6 0 0 1 9.5 24c0-1.49.26-2.93.72-4.28l-7.08-5.5A23.93 23.93 0 0 0 0 24c0 3.86.92 7.5 2.55 10.72l8.17-6.44z"/>
+                    <path fill="#34A853" d="M24 47c5.5 0 10.12-1.82 13.49-4.94l-7.19-5.58c-1.82 1.22-4.15 1.95-6.3 1.95-6.26 0-11.6-4.09-13.28-9.72l-8.17 6.44C7.07 41.52 14.82 47 24 47z"/>
+                </svg>
+                Login with Google
+            </a>
+
+            <button class="btn-social">
+                <!-- Microsoft icon -->
+                <svg width="18" height="18" viewBox="0 0 21 21">
+                    <rect x="1" y="1" width="9" height="9" fill="#F25022"/>
+                    <rect x="11" y="1" width="9" height="9" fill="#7FBA00"/>
+                    <rect x="1" y="11" width="9" height="9" fill="#00A4EF"/>
+                    <rect x="11" y="11" width="9" height="9" fill="#FFB900"/>
+                </svg>
+                Login with Microsoft
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let selectedRole = null;
+
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.add('open');
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('open');
+        }
+
+        function handleBackdropClick(e) {
+            if (e.target === document.getElementById('loginModal')) closeLoginModal();
+        }
+
+        function selectRole(role) {
+            selectedRole = role;
+            document.getElementById('role-family').classList.toggle('selected', role === 'family');
+            document.getElementById('role-vendor').classList.toggle('selected', role === 'vendor');
+            document.getElementById('role-error').style.display = 'none';
+        }
+
+        function requireRole() {
+            if (!selectedRole) {
+                document.getElementById('role-error').style.display = 'block';
+                return false;
+            }
+            return true;
+        }
+
+        document.querySelector('.btn-otp').addEventListener('click', function() {
+            if (!requireRole()) return;
+            // OTP flow — to be implemented
+        });
+
+        document.querySelector('a.btn-social').addEventListener('click', function(e) {
+            if (!requireRole()) { e.preventDefault(); return; }
+            this.href = '/login/google/' + selectedRole + '/';
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeLoginModal();
+        });
+    </script>
 
 </body>
 </html>
