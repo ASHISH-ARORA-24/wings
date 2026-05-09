@@ -1,0 +1,2 @@
+project  = "wings"
+location = "centralindia"

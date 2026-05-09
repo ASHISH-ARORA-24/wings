@@ -42,23 +42,29 @@ Deploy the Wings Django application to Azure App Service across three environmen
 
 ## Phase 3 — Terraform Infrastructure
 
-> One set of Terraform code, three environments (dev / qa / prod) via workspaces.
+> Versioned module strategy: modules are tagged in Git and each environment pins to a specific version. Sandbox runs locally; dev/qa/prod run via pipeline only.
 
-- [ ] 3.1 Write Terraform code for:
-  - [ ] Resource Group (per environment)
+- [ ] 3.1 Restructure Terraform folder into versioned layout:
+  - `modules/` — shared reusable modules (resource_group, app_service, database, etc.)
+  - `environments/sandbox/` — local state, run manually from laptop
+  - `environments/dev/` — remote state, pipeline only
+  - `environments/qa/` — remote state, pipeline only
+  - `environments/prod/` — remote state, pipeline only
+- [ ] 3.2 Write Terraform modules:
+  - [ ] Resource Group
   - [ ] App Service Plan
   - [ ] App Service (Web App)
-  - [ ] Azure Database for PostgreSQL — one per environment (dev / qa / prod)
-    - dev: smallest SKU, cheapest tier
+  - [ ] Azure Database for PostgreSQL — one per environment
+    - sandbox/dev: smallest SKU, cheapest tier
     - qa: mirrors prod sizing for accurate testing
     - prod: production grade, backup enabled, high availability
-  - [ ] Azure Key Vault (per environment)
-  - [ ] App Insights + Log Analytics Workspace (per environment)
+  - [ ] Azure Key Vault
+  - [ ] App Insights + Log Analytics Workspace
   - [ ] Managed Identity for the App Service
-- [ ] 3.2 Configure Terraform remote state (Azure Storage backend)
-- [ ] 3.3 Configure Terraform workspaces for dev / qa / prod
-- [ ] 3.4 Test Terraform plan locally (plan only, never apply locally)
-- [ ] 3.5 Write GitHub Actions pipeline for Terraform (`infra-deploy.yml`)
+- [ ] 3.3 Build and test sandbox environment locally (full cycle: init → plan → apply → destroy)
+- [ ] 3.4 Tag module version in Git (`v0.1.0`) and push to GitHub
+- [ ] 3.5 Update dev/qa/prod environments to reference module via GitHub tag
+- [ ] 3.6 Write GitHub Actions pipeline for Terraform (`infra-deploy.yml`)
   - `terraform plan` on pull request
   - `terraform apply` on merge (dev auto, qa/prod with approval gate)
 
@@ -143,7 +149,8 @@ Deploy the Wings Django application to Azure App Service across three environmen
 | Service Principal | Phase 2 |
 | RBAC / IAM | Phase 2, 4 |
 | Terraform remote state | Phase 3 |
-| Terraform workspaces | Phase 3 |
+| Terraform versioned modules | Phase 3 |
+| Sandbox environment | Phase 3 |
 | Managed Identity | Phase 4 |
 | Azure Key Vault | Phase 4 |
 | Production Django setup | Phase 5 |

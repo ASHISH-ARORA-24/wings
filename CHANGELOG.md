@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented here.
 
+## [0.1.6] - 2026-05-09
+
+### Changed
+- Restructured Terraform into versioned environment layout (sandbox, dev, qa, prod)
+- sandbox environment uses local backend — runs manually from laptop
+- dev, qa, prod environments use Azure remote state — pipeline only
+- Each environment is self-contained with its own backend, providers, variables, and outputs
+- Updated `plan.md` Phase 3 to reflect versioned module strategy over workspaces
+
+### Added
+- `deployment/app_service/VERSIONING.md` — documents versioning strategy, folder structure, git tag convention, and promotion flow
+
 ## [0.1.5] - 2026-05-09
 
 ### Added
