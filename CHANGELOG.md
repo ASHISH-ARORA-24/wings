@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented here.
 
+## [0.1.7] - 2026-05-09
+
+### Fixed
+- Added Terraform-specific entries to `.gitignore` — `.terraform/` directories, `terraform.tfstate`, and `terraform.tfstate.backup` were accidentally committed and have been removed from tracking
+- Added `deployment/.env` to `.gitignore`
+
 ## [0.1.6] - 2026-05-09
 
 ### Changed
