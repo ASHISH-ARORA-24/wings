@@ -4,7 +4,7 @@ All infrastructure changes are documented here.
 
 ## Versioning Convention
 
-- Tag format: `tf/v0.x.x`
+- Tag format: `tf/v1.x.x` — starts at v1 to avoid overlap with app version (`v0.x.x`)
 - MAJOR — breaking change to module interface (variable renamed, removed, type changed)
 - MINOR — new module added
 - PATCH — bug fix or small change within an existing module
