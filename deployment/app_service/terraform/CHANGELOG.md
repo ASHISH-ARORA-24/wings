@@ -11,7 +11,7 @@ All infrastructure changes are documented here.
 
 ---
 
-## [tf/v0.1.0] - 2026-05-09
+## [tf/v1.0.0] - 2026-05-09
 
 ### Added
 - Initial Terraform structure with versioned environment layout

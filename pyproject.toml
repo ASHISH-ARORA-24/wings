@@ -20,7 +20,7 @@ dev = [
 ]
 
 [tool.wings]
-terraform_version = "0.1.0"
+terraform_version = "1.0.0"
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "wings.settings"
