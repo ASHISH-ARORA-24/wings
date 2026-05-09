@@ -12,7 +12,7 @@ All notable changes to this project will be documented here.
 Both versions live in `pyproject.toml` — `version` for app, `tool.wings.terraform_version` for Terraform.
 Bump only the one that changed. If both changed, bump both and create both tags.
 
-Terraform changes are tracked separately in `deployment/app_service/terraform/CHANGELOG.md`.
+Terraform changes are tracked separately in `CHANGELOG_TF.md`.
 
 ## [0.1.7] - 2026-05-09
 
