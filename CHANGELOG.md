@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented here.
 
+## Versioning Convention
+
+| Version type | Tag format | Tracks |
+|---|---|---|
+| App | `v0.x.x` | Django code, templates, tests, config |
+| Terraform | `tf/v0.x.x` | Terraform modules and environment config |
+
+Both versions live in `pyproject.toml` — `version` for app, `tool.wings.terraform_version` for Terraform.
+Bump only the one that changed. If both changed, bump both and create both tags.
+
+## [tf/v0.1.0] - 2026-05-09
+
+### Terraform
+- Initial Terraform structure with versioned environment layout (sandbox, dev, qa, prod)
+- `modules/resource_group` — reusable resource group module
+- sandbox uses local backend, dev/qa/prod use Azure remote state (separate state keys)
+- `VERSIONING.md` — documents versioning strategy and promotion flow
+
 ## [0.1.7] - 2026-05-09
 
 ### Fixed

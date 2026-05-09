@@ -19,6 +19,9 @@ dev = [
     "pytest-django>=4.12.0",
 ]
 
+[tool.wings]
+terraform_version = "0.1.0"
+
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "wings.settings"
 python_files = ["test_*.py"]
