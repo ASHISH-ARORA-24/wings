@@ -17,3 +17,13 @@ db.sqlite3
 
 # Azure credentials — never commit
 deployment/azure_details.md
+
+# Terraform
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+*.tfstate
+*.tfstate.*
+
+# Deployment secrets
+deployment/.env
