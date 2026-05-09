@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented here.
 
+## [0.1.5] - 2026-05-09
+
+### Added
+- `deployment/` folder structure with `app_service/`, `common_instructions.md`
+- `deployment/app_service/plan.md` — end to end App Service deployment plan
+- `deployment/app_service/execution_log.md` — sequential log of all steps performed
+- `deployment/azure_details.md` — local only, git-ignored, stores Azure credentials reference
+- `.gitignore` updated to exclude `deployment/azure_details.md` and `.env`
+- Phase 1 complete: Azure CLI, Terraform, GitHub CLI verified and updated
+- Phase 2 complete: Service Principal created, Contributor role assigned, GitHub secrets set, Terraform remote state storage created (rg-wings-tfstate, stwingstfstate, tfstate container)
+
 ## [0.1.4] - 2026-05-08
 
 ### Added
