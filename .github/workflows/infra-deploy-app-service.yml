@@ -1,0 +1,261 @@
+name: Infrastructure Deploy App Service Terraform
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'deployment/app_service/terraform/environments/*/main.tf'
+      - '!deployment/app_service/terraform/environments/sandbox/main.tf'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'deployment/app_service/terraform/environments/*/main.tf'
+      - '!deployment/app_service/terraform/environments/sandbox/main.tf'
+
+env:
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  TF_VERSION: "1.15.2"
+
+jobs:
+
+  # -------------------------------------------------------
+  # Detect which environments have a ref= version change
+  # Environments where ref= did not change are skipped
+  # -------------------------------------------------------
+  detect:
+    name: Detect Version Changes
+    runs-on: ubuntu-latest
+    outputs:
+      dev: ${{ steps.version_check.outputs.dev }}
+      qa: ${{ steps.version_check.outputs.qa }}
+      prod: ${{ steps.version_check.outputs.prod }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: dorny/paths-filter@v3
+        id: file_filter
+        with:
+          filters: |
+            dev:
+              - 'deployment/app_service/terraform/environments/dev/main.tf'
+            qa:
+              - 'deployment/app_service/terraform/environments/qa/main.tf'
+            prod:
+              - 'deployment/app_service/terraform/environments/prod/main.tf'
+
+      - name: Check ref= version change per environment
+        id: version_check
+        run: |
+          check_version() {
+            ENV=$1
+            FILE="deployment/app_service/terraform/environments/${ENV}/main.tf"
+
+            if [ "${{ github.event_name }}" == "pull_request" ]; then
+              BASE_SHA="${{ github.event.pull_request.base.sha }}"
+            else
+              BASE_SHA="HEAD~1"
+            fi
+
+            CURRENT=$(grep -oP 'ref=\K[^"]+' $FILE 2>/dev/null || echo "none")
+            PREVIOUS=$(git show ${BASE_SHA}:${FILE} 2>/dev/null | grep -oP 'ref=\K[^"]+' || echo "none")
+
+            if [ "$CURRENT" != "$PREVIOUS" ]; then
+              echo "${ENV}=true" >> $GITHUB_OUTPUT
+              echo "::notice::${ENV}: version changed $PREVIOUS → $CURRENT"
+            else
+              echo "${ENV}=false" >> $GITHUB_OUTPUT
+              echo "::notice::${ENV}: no version change ($CURRENT) — skipping"
+            fi
+          }
+
+          [ "${{ steps.file_filter.outputs.dev }}"  == "true" ] && check_version "dev"  || echo "dev=false"  >> $GITHUB_OUTPUT
+          [ "${{ steps.file_filter.outputs.qa }}"   == "true" ] && check_version "qa"   || echo "qa=false"   >> $GITHUB_OUTPUT
+          [ "${{ steps.file_filter.outputs.prod }}" == "true" ] && check_version "prod" || echo "prod=false" >> $GITHUB_OUTPUT
+
+  # -------------------------------------------------------
+  # PLAN — sequential: dev → qa → prod
+  # Only runs for environments where ref= changed
+  # -------------------------------------------------------
+  plan-dev:
+    name: Plan Dev
+    needs: detect
+    if: needs.detect.outputs.dev == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: deployment/app_service/terraform/environments/dev
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        run: terraform plan -no-color
+
+  plan-qa:
+    name: Plan QA
+    needs: [detect, plan-dev]
+    if: |
+      always() &&
+      needs.detect.outputs.qa == 'true' &&
+      (needs.plan-dev.result == 'success' || needs.plan-dev.result == 'skipped')
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: deployment/app_service/terraform/environments/qa
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        run: terraform plan -no-color
+
+  plan-prod:
+    name: Plan Prod
+    needs: [detect, plan-qa]
+    if: |
+      always() &&
+      needs.detect.outputs.prod == 'true' &&
+      (needs.plan-qa.result == 'success' || needs.plan-qa.result == 'skipped')
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: deployment/app_service/terraform/environments/prod
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        run: terraform plan -no-color
+
+  # -------------------------------------------------------
+  # APPLY — independent per environment, each has its own
+  # approval gate. Sequence is enforced by human process.
+  # Supports independent rollback per environment.
+  # -------------------------------------------------------
+  apply-dev:
+    name: Apply Dev
+    needs: [detect, plan-dev]
+    if: |
+      github.event_name == 'push' &&
+      needs.detect.outputs.dev == 'true' &&
+      needs.plan-dev.result == 'success'
+    runs-on: ubuntu-latest
+    environment: dev
+    defaults:
+      run:
+        working-directory: deployment/app_service/terraform/environments/dev
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+
+      - name: Smoke Test
+        run: |
+          az login --service-principal \
+            --username "${{ secrets.AZURE_CLIENT_ID }}" \
+            --password "${{ secrets.AZURE_CLIENT_SECRET }}" \
+            --tenant "${{ secrets.AZURE_TENANT_ID }}"
+          az group show --name rg-wings-dev --output table
+
+  apply-qa:
+    name: Apply QA
+    needs: [detect, plan-qa]
+    if: |
+      github.event_name == 'push' &&
+      needs.detect.outputs.qa == 'true' &&
+      needs.plan-qa.result == 'success'
+    runs-on: ubuntu-latest
+    environment: qa
+    defaults:
+      run:
+        working-directory: deployment/app_service/terraform/environments/qa
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+
+      - name: Smoke Test
+        run: |
+          az login --service-principal \
+            --username "${{ secrets.AZURE_CLIENT_ID }}" \
+            --password "${{ secrets.AZURE_CLIENT_SECRET }}" \
+            --tenant "${{ secrets.AZURE_TENANT_ID }}"
+          az group show --name rg-wings-qa --output table
+
+  apply-prod:
+    name: Apply Prod
+    needs: [detect, plan-prod]
+    if: |
+      github.event_name == 'push' &&
+      needs.detect.outputs.prod == 'true' &&
+      needs.plan-prod.result == 'success'
+    runs-on: ubuntu-latest
+    environment: prod
+    defaults:
+      run:
+        working-directory: deployment/app_service/terraform/environments/prod
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+
+      - name: Smoke Test
+        run: |
+          az login --service-principal \
+            --username "${{ secrets.AZURE_CLIENT_ID }}" \
+            --password "${{ secrets.AZURE_CLIENT_SECRET }}" \
+            --tenant "${{ secrets.AZURE_TENANT_ID }}"
+          az group show --name rg-wings-prod --output table

@@ -1,8 +1,5 @@
-# Module source will be updated to GitHub URL after tagging:
-# source = "git::https://github.com/AshishArora24/wings.git//deployment/app_service/terraform/modules/resource_group?ref=v0.1.0"
-
 module "rg" {
-  source      = "../../modules/resource_group"
+  source      = "git::https://github.com/ASHISH-ARORA-24/wings.git//deployment/app_service/terraform/modules/resource_group?ref=tf/v1.0.0"
   environment = "qa"
   location    = var.location
   project     = var.project

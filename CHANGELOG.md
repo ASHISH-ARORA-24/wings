@@ -14,6 +14,17 @@ Bump only the one that changed. If both changed, bump both and create both tags.
 
 Terraform changes are tracked separately in `CHANGELOG_TF.md`.
 
+## [0.1.8] - 2026-05-10
+
+### Added
+- `.github/workflows/infra-deploy-app-service.yml` — Terraform pipeline for App Service environments
+  - Path-based trigger on `environments/*/main.tf` (sandbox excluded)
+  - detect job: checks ref= version change per environment, skips if unchanged
+  - Plan jobs: sequential (dev → qa → prod)
+  - Apply jobs: independent per environment, each with manual approval gate
+  - Smoke tests after each apply via az CLI
+- Updated dev/qa/prod `main.tf` module source to GitHub URL with `ref=tf/v1.0.0`
+
 ## [0.1.7] - 2026-05-09
 
 ### Fixed
