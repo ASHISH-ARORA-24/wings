@@ -61,12 +61,28 @@ Deploy the Wings Django application to Azure App Service across three environmen
   - [ ] Azure Key Vault
   - [ ] App Insights + Log Analytics Workspace
   - [ ] Managed Identity for the App Service
-- [ ] 3.3 Build and test sandbox environment locally (full cycle: init → plan → apply → destroy)
-- [ ] 3.4 Tag module version in Git (`v0.1.0`) and push to GitHub
-- [ ] 3.5 Update dev/qa/prod environments to reference module via GitHub tag
-- [ ] 3.6 Write GitHub Actions pipeline for Terraform (`infra-deploy.yml`)
-  - `terraform plan` on pull request
-  - `terraform apply` on merge (dev auto, qa/prod with approval gate)
+- [x] 3.3 Build and test sandbox environment locally (full cycle: init → plan → apply → destroy)
+- [x] 3.4 Tag module version in Git (`tf/v1.0.0`) and push to GitHub
+- [ ] 3.5 Update dev/qa/prod environments to reference module via GitHub tag (`ref=tf/v1.0.0`)
+- [ ] 3.6 Create GitHub environments (dev, qa, prod) with protection rules
+  - qa and prod: require manual approval before apply
+  - dev: no approval needed
+- [ ] 3.7 Write GitHub Actions pipeline for Terraform (`.github/workflows/infra-deploy.yml`)
+
+  **Pipeline design decisions (agreed):**
+  - Single pipeline file handles dev, qa, prod — not 3 separate files
+  - Sandbox is never in the pipeline — developer runs it locally only
+  - Path-based triggers — only the environment whose files changed will run
+    - `environments/dev/**` changed → dev job runs
+    - `environments/qa/**` changed → qa job runs
+    - `environments/prod/**` changed → prod job runs
+  - On PR opened/updated → `terraform plan` only, no apply
+  - On PR merged to main → `terraform apply`
+  - After each apply → smoke tests (verify Azure resources exist and respond)
+  - Version promotion is always manual — developer creates a branch, updates `ref=` in environment's `main.tf`, opens PR
+  - Rollback: create branch, revert `ref=` to old version, merge → pipeline restores old version
+  - Approval gates: qa and prod use GitHub Environment protection rules (required reviewers)
+  - Sequence per environment: init → plan → apply → smoke test
 
 ---
 
