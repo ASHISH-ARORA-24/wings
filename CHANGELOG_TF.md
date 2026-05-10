@@ -11,6 +11,11 @@ All infrastructure changes are documented here.
 
 ---
 
+## [tf/v1.3.0] - 2026-05-10
+
+### Changed
+- Promote dev, qa, prod to tf/v1.3.0
+
 ## [tf/v1.2.0] - 2026-05-10
 
 ### Changed
