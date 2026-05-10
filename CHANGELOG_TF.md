@@ -11,6 +11,11 @@ All infrastructure changes are documented here.
 
 ---
 
+## [tf/v1.1.0] - 2026-05-10
+
+### Changed
+- Test version bump to validate pipeline flow (plan → approval → apply)
+
 ## [tf/v1.0.0] - 2026-05-09
 
 ### Added
