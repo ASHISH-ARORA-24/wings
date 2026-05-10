@@ -11,6 +11,11 @@ All infrastructure changes are documented here.
 
 ---
 
+## [tf/v1.2.0] - 2026-05-10
+
+### Changed
+- Test version bump to validate fixed pipeline (apply jobs now use always())
+
 ## [tf/v1.1.0] - 2026-05-10
 
 ### Changed

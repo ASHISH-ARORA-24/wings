@@ -162,6 +162,7 @@ jobs:
     name: Apply Dev
     needs: [detect, plan-dev]
     if: |
+      always() &&
       github.event_name == 'push' &&
       needs.detect.outputs.dev == 'true' &&
       needs.plan-dev.result == 'success'
@@ -196,6 +197,7 @@ jobs:
     name: Apply QA
     needs: [detect, plan-qa]
     if: |
+      always() &&
       github.event_name == 'push' &&
       needs.detect.outputs.qa == 'true' &&
       needs.plan-qa.result == 'success'
@@ -230,6 +232,7 @@ jobs:
     name: Apply Prod
     needs: [detect, plan-prod]
     if: |
+      always() &&
       github.event_name == 'push' &&
       needs.detect.outputs.prod == 'true' &&
       needs.plan-prod.result == 'success'

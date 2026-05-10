@@ -14,6 +14,11 @@ Bump only the one that changed. If both changed, bump both and create both tags.
 
 Terraform changes are tracked separately in `CHANGELOG_TF.md`.
 
+## [0.1.9] - 2026-05-10
+
+### Fixed
+- Pipeline: added `always()` to apply-dev, apply-qa, apply-prod jobs to prevent skipping when upstream plan jobs use `always()` due to sequential needs chain
+
 ## [0.1.8] - 2026-05-10
 
 ### Added
