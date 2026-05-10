@@ -13,10 +13,6 @@ on:
       - '!deployment/app_service/terraform/environments/sandbox/main.tf'
 
 env:
-  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-  ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
   TF_VERSION: "1.15.2"
 
 jobs:
@@ -79,29 +75,17 @@ jobs:
 
   # -------------------------------------------------------
   # PLAN — sequential: dev → qa → prod
-  # Only runs for environments where ref= changed
   # -------------------------------------------------------
   plan-dev:
     name: Plan Dev
     needs: detect
     if: needs.detect.outputs.dev == 'true'
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: deployment/app_service/terraform/environments/dev
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ env.TF_VERSION }}
-
-      - name: Terraform Init
-        run: terraform init
-
-      - name: Terraform Plan
-        run: terraform plan -no-color
+    uses: ./.github/workflows/_tf-plan.yml
+    secrets: inherit
+    with:
+      environment: dev
+      working_directory: deployment/app_service/terraform/environments/dev
+      tf_version: "1.15.2"
 
   plan-qa:
     name: Plan QA
@@ -110,23 +94,12 @@ jobs:
       always() &&
       needs.detect.outputs.qa == 'true' &&
       (needs.plan-dev.result == 'success' || needs.plan-dev.result == 'skipped')
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: deployment/app_service/terraform/environments/qa
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ env.TF_VERSION }}
-
-      - name: Terraform Init
-        run: terraform init
-
-      - name: Terraform Plan
-        run: terraform plan -no-color
+    uses: ./.github/workflows/_tf-plan.yml
+    secrets: inherit
+    with:
+      environment: qa
+      working_directory: deployment/app_service/terraform/environments/qa
+      tf_version: "1.15.2"
 
   plan-prod:
     name: Plan Prod
@@ -135,23 +108,12 @@ jobs:
       always() &&
       needs.detect.outputs.prod == 'true' &&
       (needs.plan-qa.result == 'success' || needs.plan-qa.result == 'skipped')
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: deployment/app_service/terraform/environments/prod
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ env.TF_VERSION }}
-
-      - name: Terraform Init
-        run: terraform init
-
-      - name: Terraform Plan
-        run: terraform plan -no-color
+    uses: ./.github/workflows/_tf-plan.yml
+    secrets: inherit
+    with:
+      environment: prod
+      working_directory: deployment/app_service/terraform/environments/prod
+      tf_version: "1.15.2"
 
   # -------------------------------------------------------
   # APPLY — independent per environment, each has its own
@@ -166,32 +128,12 @@ jobs:
       github.event_name == 'push' &&
       needs.detect.outputs.dev == 'true' &&
       needs.plan-dev.result == 'success'
-    runs-on: ubuntu-latest
-    environment: dev
-    defaults:
-      run:
-        working-directory: deployment/app_service/terraform/environments/dev
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ env.TF_VERSION }}
-
-      - name: Terraform Init
-        run: terraform init
-
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
-
-      - name: Smoke Test
-        run: |
-          az login --service-principal \
-            --username "${{ secrets.AZURE_CLIENT_ID }}" \
-            --password "${{ secrets.AZURE_CLIENT_SECRET }}" \
-            --tenant "${{ secrets.AZURE_TENANT_ID }}"
-          az group show --name rg-wings-dev --output table
+    uses: ./.github/workflows/_tf-apply.yml
+    secrets: inherit
+    with:
+      environment: dev
+      working_directory: deployment/app_service/terraform/environments/dev
+      tf_version: "1.15.2"
 
   apply-qa:
     name: Apply QA
@@ -201,32 +143,12 @@ jobs:
       github.event_name == 'push' &&
       needs.detect.outputs.qa == 'true' &&
       needs.plan-qa.result == 'success'
-    runs-on: ubuntu-latest
-    environment: qa
-    defaults:
-      run:
-        working-directory: deployment/app_service/terraform/environments/qa
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ env.TF_VERSION }}
-
-      - name: Terraform Init
-        run: terraform init
-
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
-
-      - name: Smoke Test
-        run: |
-          az login --service-principal \
-            --username "${{ secrets.AZURE_CLIENT_ID }}" \
-            --password "${{ secrets.AZURE_CLIENT_SECRET }}" \
-            --tenant "${{ secrets.AZURE_TENANT_ID }}"
-          az group show --name rg-wings-qa --output table
+    uses: ./.github/workflows/_tf-apply.yml
+    secrets: inherit
+    with:
+      environment: qa
+      working_directory: deployment/app_service/terraform/environments/qa
+      tf_version: "1.15.2"
 
   apply-prod:
     name: Apply Prod
@@ -236,29 +158,9 @@ jobs:
       github.event_name == 'push' &&
       needs.detect.outputs.prod == 'true' &&
       needs.plan-prod.result == 'success'
-    runs-on: ubuntu-latest
-    environment: prod
-    defaults:
-      run:
-        working-directory: deployment/app_service/terraform/environments/prod
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ env.TF_VERSION }}
-
-      - name: Terraform Init
-        run: terraform init
-
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
-
-      - name: Smoke Test
-        run: |
-          az login --service-principal \
-            --username "${{ secrets.AZURE_CLIENT_ID }}" \
-            --password "${{ secrets.AZURE_CLIENT_SECRET }}" \
-            --tenant "${{ secrets.AZURE_TENANT_ID }}"
-          az group show --name rg-wings-prod --output table
+    uses: ./.github/workflows/_tf-apply.yml
+    secrets: inherit
+    with:
+      environment: prod
+      working_directory: deployment/app_service/terraform/environments/prod
+      tf_version: "1.15.2"

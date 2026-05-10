@@ -11,6 +11,11 @@ All infrastructure changes are documented here.
 
 ---
 
+## [tf/v1.3.0] - 2026-05-10
+
+### Changed
+- Promote dev to tf/v1.3.0 to test reusable pipeline and PR plan comment feature
+
 ## [tf/v1.2.0] - 2026-05-10
 
 ### Changed

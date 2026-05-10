@@ -14,6 +14,12 @@ Bump only the one that changed. If both changed, bump both and create both tags.
 
 Terraform changes are tracked separately in `CHANGELOG_TF.md`.
 
+## [0.1.10] - 2026-05-10
+
+### Changed
+- Pipeline: refactor plan and apply jobs into reusable workflows (`_tf-plan.yml`, `_tf-apply.yml`)
+- Pipeline: post terraform plan output as PR comment per environment (overwrites on re-run)
+
 ## [0.1.9] - 2026-05-10
 
 ### Fixed
